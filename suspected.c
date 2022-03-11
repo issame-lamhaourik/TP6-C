@@ -68,19 +68,37 @@ void Suspected_AddWordWeightFromFile(Suspected * self, char * filename)
 //===============================================
 int Suspected_GetWeight(Suspected self, Word word)
 {
- // TODO
+  for (int i = 0; i < self.length; i++){
+    if( ! strcmp(self.word[i], word )){
+      return self.word[i];
+    }
+  }
+  return 0;
 }
+
 
 //===============================================
 int Suspected_GetTotalWeight(Suspected self, char * subject)
 {
- // TODO
+  int result = 0;
+  const char * delim = " ";
+  
+  char * newSubject = strdup(subject);
+  
+  char * word = strtok(newSubject, delim);
+  
+  while (word != NULL){
+    word = strtok(NULL, delim);
+    result += Suspected_GetWeight(self,word);
+    
+  }
+  return result;
 }
 
 //===============================================
 bool Suspected_IsSuspected(Suspected self, char * subject, int threshold)
 {
- // TODO
+ return (Suspected_GetTotalWeight(self,subject) > threshold);
 }
 
 //===============================================

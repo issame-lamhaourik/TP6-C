@@ -55,7 +55,13 @@ void Mail_Realloc(Mail * self)
 //===============================================
 bool Mail_IsMail(FILE * fin)
 {
- // TODO
+  //FILE * end;
+  char c[1024];
+  
+  if (fin != NULL){
+    fgets(c, 1024, fin);
+      return (strcmp(c, "#email") == 0);
+  }
 }
 
 //===============================================
@@ -73,13 +79,25 @@ void Mail_GetSubject(FILE * fin, Subject subject)
 //===============================================
 void Mail_AddMail(Mail * self, Filename filename)
 {
- // TODO
+  FILE *fin;
+  fin = fopen(filename, "r");
+  if (fin == NULL){
+    printf("le fichier n'a pas pu etre ouvert");
+    exit(0);
+  
+  MailAddress sender;
+  Subject subject;
+  
+  fscanf(fin, "%s\n", sender);
+  fgets(subject, MAX_SUBJECT_SIZE, fin);
+   
+ }
 }
 
 //===============================================
 void Mail_AddMailsFromDirectory(Mail * self, char * dirName)
 {
- // TODO
+ // TODO ouvrir avec stat et tester avce les macro du cours open dir read dir...
 }
 
 //===============================================

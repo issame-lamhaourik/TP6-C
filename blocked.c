@@ -23,14 +23,16 @@ bool Blocked_IsFull(Blocked self)
 void Blocked_Realloc(Blocked * self)
 {
   
- if (self -> capacity== 0){
+ if (self -> capacity == 0){
    int newCapacity = 2;
-   self -> mailAddress = realloc(self->mailAddress, sizeof(newCapacity) * self->length);
+   self -> mailAddress = realloc(self-> mailAddress, sizeof(BlockedAddress)* newCapacity);
+   self -> capacity = newCapacity;
+   
  }
  
  int doubleCapacity = 2 * self -> capacity;
- self -> mailAddress = realloc(self ->mailAddress, sizeof(doubleCapacity) * self->length);
- 
+ self -> mailAddress = realloc(self -> mailAddress, sizeof(BlockedAddress) * doubleCapacity);
+ self -> capacity = (self -> capacity) * 2;  //doubleCapacity
 }
 
 //===============================================
@@ -38,16 +40,15 @@ void Blocked_AddAddress(Blocked * self, BlockedAddress mailAddress)
 {
   if (Blocked_IsFull(*self)){
     Blocked_Realloc(self);
-    Blocked_AddAddress(self,mailAddress);
   }
-  strcpy(&mailAddress [self->length], mailAddress);
+  strcpy(self -> mailAddress [self -> length], mailAddress);
 }
 
 //===============================================
 void Blocked_AddAddressFromFile(Blocked * self, char * filename)
 {
   FILE * end;
-  end = fopen(filename, "r+");
+  end = fopen(filename, "r");
   char c[1024];
   
   if (end != NULL){
@@ -60,12 +61,11 @@ void Blocked_AddAddressFromFile(Blocked * self, char * filename)
 //===============================================
 bool Blocked_IsBlocked(Blocked self, BlockedAddress mailAddress)
 {
- for (int i = 0; i < self.capacity; i++){
-   if (strcmp(mailAddress, *self.mailAddress) == 0){
-     return true;}
- }
-}
+  for (int i = 0; i < self.capacity; i++){
+    return (strcmp(mailAddress, self.mailAddress[i]) == 0);}
 
+  return false;
+}
 //===============================================
 void Blocked_Destroy(Blocked * self)
 {
