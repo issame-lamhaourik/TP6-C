@@ -62,6 +62,7 @@ bool Mail_IsMail(FILE * fin)
     fgets(c, 1024, fin);
       return (strcmp(c, "#email") == 0);
   }
+  return false;
 }
 
 //===============================================
@@ -97,8 +98,27 @@ void Mail_AddMail(Mail * self, Filename filename)
 //===============================================
 void Mail_AddMailsFromDirectory(Mail * self, char * dirName)
 {
- // TODO ouvrir avec stat et tester avce les macro du cours open dir read dir...
+
+	DIR *rep ;
+	struct dirent *file ;
+	struct stat sb;
+
+
+	rep = opendir (dirName) ;
+	if (rep != NULL)       {           //l'ouverture a reussit
+		while (file = readdir(rep))      //lecture du repertoire
+ 
+			if( stat(dirName, &sb) != -1) {
+				if( S_ISREG( sb.st_mode ) != 0 ) {   //le fichier est regulier
+					Mail_AddMail(self, file->d_name);
+
+				}
+			}
+closedir(rep);
+		}
 }
+
+
 
 //===============================================
 bool Mail_IsBlocked(Mail self, int index)
@@ -121,7 +141,16 @@ bool Mail_IsClean(Mail self, int index)
 //===============================================
 void Mail_Classify(Mail *self, int index, Blocked blocked, Suspected suspected)
 {
-   // TODO
+
+	if (Blocked_IsBlocked(blocked, self->sender[index])){
+		self -> classification[index] = BLOCKED;
+		
+		}
+		
+		
+	if( Suspected_IsSuspected(suspected, self->subject[index], 60)){
+		self -> classification[index] = SUSPECTED;
+		}
 }
 
 //===============================================
@@ -135,7 +164,23 @@ void Mail_ClassifyAll(Mail *self, Blocked blocked, Suspected suspected)
 //===============================================
 void Mail_Rename(Mail self, int index)
 {
- // TODO
+	
+	char * a = "[BLOCKED]";
+	char * b = "[SUSPECTED ";
+		
+	char c[1024];
+														// char * itoa(int num, char * buffer, int base)  
+																																							
+	if (Mail_IsBlocked(self,index)){
+		strcat(self.filename, a);
+		sprintf(c, "%s[BLOCKED]", self.filename);	
+		}
+	
+	if (Mail_IsSuspected (self, index)){
+		strcat(self.filename, c);
+		sprintf(c, "%s[SUSPECTED %d]", self.filename, self.totalWeight);	
+		}
+
 }
 
 //===============================================
