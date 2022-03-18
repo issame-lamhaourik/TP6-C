@@ -168,17 +168,23 @@ void Mail_Rename(Mail self, int index)
 	char * a = "[BLOCKED]";
 	char * b = "[SUSPECTED ";
 		
+
 	char c[1024];
 														// char * itoa(int num, char * buffer, int base)  
 																																							
 	if (Mail_IsBlocked(self,index)){
-		strcat(self.filename, a);
-		sprintf(c, "%s[BLOCKED]", self.filename);	
+		strcat(self.filename[index], a);
+		sprintf(c, "%s[BLOCKED]", self.filename);
+		
+		rename(self.filename[index], c);
 		}
 	
 	if (Mail_IsSuspected (self, index)){
 		strcat(self.filename, c);
-		sprintf(c, "%s[SUSPECTED %d]", self.filename, self.totalWeight);	
+		sprintf(c, "%s[SUSPECTED %d]", self.filename, self.totalWeight);
+		
+		rename(self.filename[index], c);
+	
 		}
 
 }
